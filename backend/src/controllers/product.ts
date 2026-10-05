@@ -13,7 +13,7 @@ export const getProducts = (_req: Request, res: Response, next: NextFunction) =>
 export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const product = await Product.create(req.body);
-    return res.send({ data: product });
+    return res.status(201).send({ data: product });
   } catch (error) {
     if (error instanceof Error && error.message.includes('E11000')) {
       return next(new ConflictError('Товар с таким названием уже существует'));

@@ -41,7 +41,7 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
 
     const order = await Order.create(body);
 
-    return res.send({ id: order._id, total: order.total });
+    return res.status(201).send({ id: order._id, total: order.total });
   } catch (error) {
     if (
       error instanceof MongooseError.ValidationError
