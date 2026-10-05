@@ -19,12 +19,15 @@ const orderSchema = new Schema<IOrder>({
   },
   payment: {
     type: String,
-    enum: ['card', 'online'],
-    required: true,
+    enum: {
+      values: ['card', 'online'],
+      message: 'Поле "payment" должно быть card или online',
+    },
+    required: [true, 'Поле "payment" должно быть заполнено'],
   },
   email: {
     type: String,
-    required: true,
+    required: [true, 'Поле "email" должно быть заполнено'],
     validate: {
       validator: (value: string) => validator.isEmail(value),
       message: 'Некорректный email',
@@ -32,19 +35,24 @@ const orderSchema = new Schema<IOrder>({
   },
   phone: {
     type: String,
-    required: true,
+    required: [true, 'Поле "phone" должно быть заполнено'],
+    validate: {
+      validator: (value: string) => /^\+?\d{6,15}$/.test(value),
+      message: 'Некорректный номер телефона',
+    },
   },
   address: {
     type: String,
-    required: true,
+    required: [true, 'Поле "address" должно быть заполнено'],
   },
   total: {
     type: Number,
-    required: true,
+    required: [true, 'Поле "total" должно быть заполнено'],
+    min: [0, 'Поле "total" не может быть отрицательным'],
   },
   items: {
     type: [String],
-    required: true,
+    required: [true, 'Поле "items" должно быть заполнено'],
     validate: {
       validator: (value: string[]) => value.length > 0,
       message: 'Список товаров не может быть пустым',
