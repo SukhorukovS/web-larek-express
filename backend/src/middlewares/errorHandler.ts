@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Error as MongooseError } from 'mongoose';
 import { CelebrateError, Segments } from 'celebrate';
 import BadRequestError from '../errors/BadRequestError';
+import ConflictError from '../errors/ConflictError';
 
 interface ErrorWithStatusCode extends Error {
   statusCode?: number;
@@ -24,6 +25,10 @@ const errorHandler = (
 
   if (error instanceof MongooseError.ValidationError || error instanceof MongooseError.CastError) {
     error = new BadRequestError(error.message);
+  }
+
+  if ((error as { code?: number }).code === 11000) {
+    error = new ConflictError('Запись с такими данными уже существует');
   }
 
   const { statusCode = 500 } = error;

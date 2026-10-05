@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { Error as MongooseError } from 'mongoose';
 import Product from '../models/product';
 import Order from '../models/order';
 import BadRequestError from '../errors/BadRequestError';
@@ -43,12 +42,6 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
 
     return res.status(201).send({ id: order._id, total: order.total });
   } catch (error) {
-    if (
-      error instanceof MongooseError.ValidationError
-      || error instanceof MongooseError.CastError
-    ) {
-      return next(new BadRequestError('Ошибка валидации данных при создании заказа'));
-    }
     return next(error);
   }
 };
