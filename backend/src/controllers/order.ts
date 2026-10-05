@@ -18,10 +18,6 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body as IOrderBody;
     const { total, items } = body;
 
-    if (!Array.isArray(items) || items.length === 0 || items.some((id) => typeof id !== 'string')) {
-      return next(new BadRequestError('Некорректный список товаров'));
-    }
-
     const products = await Product.find({ _id: { $in: items } });
 
     if (products.length !== items.length) {
