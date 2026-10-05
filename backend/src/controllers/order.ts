@@ -1,7 +1,9 @@
-import { Request, Response } from 'express';
-import mongoose from 'mongoose';
+import { Request, Response, NextFunction } from 'express';
+import { Error as MongooseError } from 'mongoose';
 import Product from '../models/product';
 import Order from '../models/order';
+import BadRequestError from '../errors/BadRequestError';
+import NotFoundError from '../errors/NotFoundError';
 
 interface IOrderBody {
   payment: string;
@@ -12,40 +14,42 @@ interface IOrderBody {
   items: string[];
 }
 
-const createOrder = async (req: Request, res: Response) => {
+const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const body = req.body as IOrderBody;
     const { total, items } = body;
 
     if (!Array.isArray(items) || items.length === 0 || items.some((id) => typeof id !== 'string')) {
-      return res.status(400).send({ message: 'Некорректный список товаров' });
+      return next(new BadRequestError('Некорректный список товаров'));
     }
 
     const products = await Product.find({ _id: { $in: items } });
 
     if (products.length !== items.length) {
-      return res.status(404).send({ message: 'Один из товаров не найден' });
+      return next(new NotFoundError('Один из товаров не найден'));
     }
 
     if (products.some((product) => product.price === null)) {
-      return res.status(400).send({ message: 'Один из товаров не продаётся' });
+      return next(new BadRequestError('Один из товаров не продаётся'));
     }
 
     const calculatedTotal = products.reduce((acc, product) => acc + (product.price ?? 0), 0);
 
     if (typeof total !== 'number' || total !== calculatedTotal) {
-      return res.status(400).send({ message: 'Некорректная сумма заказа' });
+      return next(new BadRequestError('Некорректная сумма заказа'));
     }
 
     const order = await Order.create(body);
 
     return res.send({ id: order._id, total: order.total });
-  } catch (err) {
-    console.error(err);
-    if (err instanceof mongoose.Error.ValidationError || err instanceof mongoose.Error.CastError) {
-      return res.status(400).send({ message: err.message });
+  } catch (error) {
+    if (
+      error instanceof MongooseError.ValidationError
+      || error instanceof MongooseError.CastError
+    ) {
+      return next(new BadRequestError('Ошибка валидации данных при создании заказа'));
     }
-    return res.status(500).send({ message: 'Произошла ошибка' });
+    return next(error);
   }
 };
 

@@ -4,6 +4,8 @@ import path from 'path';
 
 import productRouter from './routes/product';
 import orderRouter from './routes/order';
+import notFoundHandler from './middlewares/notFoundHandler';
+import errorHandler from './middlewares/errorHandler';
 
 const app = express();
 
@@ -16,6 +18,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/product', productRouter);
 
 app.use('/order', orderRouter);
+
+app.use(notFoundHandler);
+
+app.use(errorHandler);
 
 app.listen(3000, () => {
   console.log('App listen at port 3000');

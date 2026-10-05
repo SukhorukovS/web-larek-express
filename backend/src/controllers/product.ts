@@ -1,23 +1,29 @@
-import { Request, Response } from 'express';
-import mongoose from 'mongoose';
+import { Request, Response, NextFunction } from 'express';
+import { Error as MongooseError } from 'mongoose';
 import Product from '../models/product';
+import BadRequestError from '../errors/BadRequestError';
+import ConflictError from '../errors/ConflictError';
 
-export const getProducts = (_req: Request, res: Response) => Product.find({})
-  .then((products) => res.send({ items: products, total: products.length }))
-  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+export const getProducts = (_req: Request, res: Response, next: NextFunction) => {
+  Product.find({})
+    .then((products) => res.send({ items: products, total: products.length }))
+    .catch(next);
+};
 
-export const createProduct = async (req: Request, res: Response) => {
+export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const product = await Product.create(req.body);
     return res.send({ data: product });
-  } catch (err) {
-    console.error(err);
-    if ((err as { code?: number }).code === 11000) {
-      return res.status(400).send({ message: 'Товар с таким названием уже существует' });
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('E11000')) {
+      return next(new ConflictError('Товар с таким названием уже существует'));
     }
-    if (err instanceof mongoose.Error.ValidationError || err instanceof mongoose.Error.CastError) {
-      return res.status(400).send({ message: err.message });
+    if (
+      error instanceof MongooseError.ValidationError
+      || error instanceof MongooseError.CastError
+    ) {
+      return next(new BadRequestError('Ошибка валидации данных при создании товара'));
     }
-    return res.status(500).send({ message: 'Произошла ошибка' });
+    return next(error);
   }
 };
