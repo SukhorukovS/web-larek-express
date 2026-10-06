@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
 
-interface IUser {
+export interface IUser {
   name: string;
   email: string;
   password: string;
@@ -33,7 +33,12 @@ const userSchema = new Schema<IUser>({
   tokens: {
     type: [{ token: { type: String, required: true } }],
     default: [],
+    select: false,
   },
+});
+
+userSchema.set('toJSON', {
+  transform: (_doc, ret) => ({ ...ret, password: undefined, tokens: undefined }),
 });
 
 export default model<IUser>('user', userSchema);

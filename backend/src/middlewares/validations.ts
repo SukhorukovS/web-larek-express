@@ -29,6 +29,42 @@ export const productBodySchema = {
   price: Joi.number().allow(null),
 };
 
+export const loginBodySchema = {
+  email: Joi.string().required().email()
+    .messages({
+      'string.email': 'Некорректный email',
+      'any.required': 'Поле "email" должно быть заполнено',
+      'string.empty': 'Поле "email" должно быть заполнено',
+    }),
+  password: Joi.string().required()
+    .messages({
+      'any.required': 'Поле "password" должно быть заполнено',
+      'string.empty': 'Поле "password" должно быть заполнено',
+    }),
+};
+
+export const registerBodySchema = {
+  name: Joi.string().required().min(2).max(30)
+    .messages({
+      'string.min': 'Минимальная длина поля "name" - 2',
+      'string.max': 'Максимальная длина поля "name" - 30',
+      'any.required': 'Поле "name" должно быть заполнено',
+      'string.empty': 'Поле "name" должно быть заполнено',
+    }),
+  email: Joi.string().required().email()
+    .messages({
+      'string.email': 'Некорректный email',
+      'any.required': 'Поле "email" должно быть заполнено',
+      'string.empty': 'Поле "email" должно быть заполнено',
+    }),
+  password: Joi.string().required().min(6)
+    .messages({
+      'string.min': 'Минимальная длина поля "password" - 6',
+      'any.required': 'Поле "password" должно быть заполнено',
+      'string.empty': 'Поле "password" должно быть заполнено',
+    }),
+};
+
 export const orderBodySchema = {
   payment: Joi.string().valid('card', 'online').required()
     .messages({
