@@ -6,15 +6,16 @@ import {
   getProducts,
   updateProduct,
 } from '../controllers/product';
+import auth from '../middlewares/auth';
 import { productBodySchema, productUpdateBodySchema } from '../middlewares/validations';
 
 const router = Router();
 router.get('/', getProducts);
 
-router.post('/', celebrate({ body: productBodySchema }), createProduct);
+router.post('/', auth, celebrate({ body: productBodySchema }), createProduct);
 
-router.patch('/:productId', celebrate({ body: productUpdateBodySchema }), updateProduct);
+router.patch('/:productId', auth, celebrate({ body: productUpdateBodySchema }), updateProduct);
 
-router.delete('/:productId', deleteProduct);
+router.delete('/:productId', auth, deleteProduct);
 
 export default router;
