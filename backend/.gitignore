@@ -18,3 +18,5 @@ node_modules
 dist
 temp
 .env
+# Uploaded files temp dir
+uploads/

@@ -7,6 +7,7 @@ import config from './config';
 import productRouter from './routes/product';
 import orderRouter from './routes/order';
 import authRouter from './routes/auth';
+import uploadRouter from './routes/upload';
 import { requestLogger, errorLogger } from './middlewares/logger';
 import notFoundHandler from './middlewares/notFoundHandler';
 import errorHandler from './middlewares/errorHandler';
@@ -29,6 +30,8 @@ app.use('/auth', authRouter);
 app.use('/product', productRouter);
 
 app.use('/order', orderRouter);
+
+app.use('/upload', uploadRouter);
 
 app.use(notFoundHandler);
 

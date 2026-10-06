@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Error as MongooseError } from 'mongoose';
 import { CelebrateError, Segments } from 'celebrate';
+import { MulterError } from 'multer';
 import BadRequestError from '../errors/BadRequestError';
 import ConflictError from '../errors/ConflictError';
 
@@ -25,6 +26,13 @@ const errorHandler = (
 
   if (error instanceof MongooseError.ValidationError || error instanceof MongooseError.CastError) {
     error = new BadRequestError(error.message);
+  }
+
+  if (error instanceof MulterError) {
+    const message = error.code === 'LIMIT_FILE_SIZE'
+      ? 'Файл слишком большой. Максимальный размер - 5 МБ'
+      : 'Ошибка загрузки файла';
+    error = new BadRequestError(message);
   }
 
   if ((error as { code?: number }).code === 11000) {
