@@ -71,11 +71,10 @@ export const loginBodySchema = {
 };
 
 export const registerBodySchema = {
-  name: Joi.string().required().min(2).max(30)
+  name: Joi.string().min(2).max(30)
     .messages({
       'string.min': 'Минимальная длина поля "name" - 2',
       'string.max': 'Максимальная длина поля "name" - 30',
-      'any.required': 'Поле "name" должно быть заполнено',
       'string.empty': 'Поле "name" должно быть заполнено',
     }),
   email: Joi.string().required().email()

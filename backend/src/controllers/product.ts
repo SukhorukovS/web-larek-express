@@ -16,7 +16,8 @@ const moveImageFromTemp = async (fileName: string) => {
   }
 
   await fs.promises.mkdir(config.UPLOAD_IMAGE_DIR, { recursive: true });
-  await fs.promises.rename(sourcePath, destinationPath);
+  await fs.promises.copyFile(sourcePath, destinationPath);
+  await fs.promises.unlink(sourcePath);
 };
 
 export const getProducts = (_req: Request, res: Response, next: NextFunction) => {
@@ -32,7 +33,7 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
     await moveImageFromTemp(image.fileName);
 
     const product = await Product.create(req.body);
-    return res.status(201).send({ data: product });
+    return res.status(201).send(product);
   } catch (error) {
     return next(error);
   }
@@ -72,7 +73,7 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
       throw new NotFoundError('Товар не найден');
     }
 
-    return res.send({ data: product });
+    return res.send(product);
   } catch (error) {
     return next(error);
   }

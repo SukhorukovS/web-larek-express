@@ -8,10 +8,10 @@ import config from '../config';
 
 const ALLOWED_MIME_TYPES = [
   'image/png',
+  'image/jpg',
   'image/jpeg',
-  'image/svg+xml',
-  'image/webp',
   'image/gif',
+  'image/svg+xml',
 ];
 
 fs.mkdirSync(config.UPLOAD_TEMP_DIR, { recursive: true });
@@ -32,7 +32,7 @@ const fileMiddleware = multer({
     if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
       return cb(null, true);
     }
-    return cb(new BadRequestError('Недопустимый тип файла. Разрешены только изображения: png, jpg, svg, webp, gif'));
+    return cb(new BadRequestError('Недопустимый тип файла. Разрешены только изображения: png, jpg, jpeg, gif, svg'));
   },
 });
 
