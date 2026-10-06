@@ -38,6 +38,22 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
+  const { productId } = req.params;
+
+  try {
+    const product = await Product.findByIdAndDelete(productId);
+
+    if (!product) {
+      throw new NotFoundError('Товар не найден');
+    }
+
+    return res.send(product);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
   const { productId } = req.params;
   const { image } = req.body;
