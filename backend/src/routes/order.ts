@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { celebrate } from 'celebrate';
 import createOrder from '../controllers/order';
-import { orderBodySchema } from '../validations';
+import { orderBodySchema } from '../middlewares/validations';
 
 const router = Router();
 

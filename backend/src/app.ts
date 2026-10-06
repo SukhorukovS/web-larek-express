@@ -2,17 +2,20 @@ import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
 
+import config from './config';
 import productRouter from './routes/product';
 import orderRouter from './routes/order';
 import { requestLogger, errorLogger } from './middlewares/logger';
 import notFoundHandler from './middlewares/notFoundHandler';
 import errorHandler from './middlewares/errorHandler';
 
+const { PORT, DB_ADDRESS } = config;
+
 const app = express();
 
 app.use(express.json());
 
-mongoose.connect(process.env.DB_ADDRESS ?? 'mongodb://127.0.0.1:27017/weblarek');
+mongoose.connect(DB_ADDRESS);
 
 app.use(requestLogger);
 
@@ -28,6 +31,6 @@ app.use(errorLogger);
 
 app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log('App listen at port 3000');
+app.listen(PORT, () => {
+  console.log(`App listen at port ${PORT}`);
 });
